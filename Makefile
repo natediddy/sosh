@@ -6,9 +6,20 @@ VERSION = 0.01
 
 CFLAGS += -DSOSH_VERSION=\"$(VERSION)\"
 
-SOURCES = sosh.c
-OBJECTS = sosh.o
-HEADERS = sosh.h
+SOURCES = sosh.c \
+		  sosh-builtins.c \
+		  sosh-env.c \
+		  sosh-external.c
+
+OBJECTS = sosh.o \
+		  sosh-builtins.o \
+		  sosh-env.o \
+		  sosh-external.o
+
+HEADERS = sosh.h \
+		  sosh-builtins.h \
+		  sosh-env.h \
+		  sosh-external.h
 
 prefix = /usr/local
 
@@ -19,6 +30,15 @@ $(TARGET): $(OBJECTS)
 
 sosh.o: sosh.h
 	$(CC) $(CFLAGS) -c sosh.c
+
+sosh-builtins.o: sosh-builtins.h
+	$(CC) $(CFLAGS) -c sosh-builtins.c
+
+sosh-env.o: sosh-env.h
+	$(CC) $(CFLAGS) -c sosh-env.c
+
+sosh-external.o: sosh-external.h
+	$(CC) $(CFLAGS) -c sosh-external.c
 
 clean:
 	@rm -f $(OBJECTS)

@@ -3,12 +3,17 @@
  * Nathan Forbes
  */
 
-#ifndef SoSH_H_INCLUDED
-#define SoSH_H_INCLUDED
+#ifndef SOSH_H_INCLUDED
+#define SOSH_H_INCLUDED
+
+#define DEFAULT_PROGRAM_NAME "sosh"
+#ifndef SOSH_VERSION
+#  define SOSH_VERSION "X.XX-test"
+#endif
 
 #ifndef __cplusplus
-typedef unsigned char __SoSH_Bool;
-#  define bool __SoSH_Bool
+typedef unsigned char __SOSH_Bool;
+#  define bool __SOSH_Bool
 #  define false ((bool) 0)
 #  define true ((bool) 1)
 #else
@@ -17,5 +22,5 @@ typedef unsigned char __SoSH_Bool;
 #  define true true
 #endif
 
-#endif /* SoSH_H_INCLUDED */
+#endif /* SOSH_H_INCLUDED */
 

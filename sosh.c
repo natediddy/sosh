@@ -3,9 +3,9 @@
 #include <string.h>
 
 #include "sosh.h"
-#include "sosh-builtins.h"
+#include "sosh-bltn.h"
 #include "sosh-env.h"
-#include "sosh-external.h"
+#include "sosh-exec.h"
 
 #define USER_INPUT_BUFFER_MAX 1024
 #define DEFAULT_PS1 "$"
@@ -21,7 +21,7 @@ display_prompt (void)
 }
 
 static void
-grab_input (char *input_buffer)
+grab_input (char *input)
 {
   size_t pos = 0;
   int c;
@@ -31,52 +31,47 @@ grab_input (char *input_buffer)
     c = fgetc (stdin);
     if (c == '\n' || c == EOF || pos >= USER_INPUT_BUFFER_MAX)
       break;
-    input_buffer[pos++] = c;
+    input[pos++] = c;
   }
-  input_buffer[pos] = '\0';
+  input[pos] = '\0';
 }
 
 static void
-process_input (char *input_buffer)
+process_input (char *input)
 {
   size_t i = 0;
 
-  while (input_buffer[i] == ' ' || input_buffer[i] == '\t')
-    ++i;
-  for (; input_buffer[i] && input_buffer[i] != ' ' &&
-      input_buffer[i] != '\t'; ++i)
+  sosh_str_skip_white_pos (input, &i);
+  for (; input[i] && input[i] != ' ' && input[i] != '\t'; ++i)
     ;
 
-  char buf[i + 1];
+  char cmd[i + 1];
 
-  strncpy (buf, input_buffer, i);
-  buf[i] = '\0';
+  strncpy (cmd, input, i);
+  cmd[i] = '\0';
 
-  if (buf[0] == SOSH_BUILTIN_COMMAND_CHAR)
-    sosh_builtin_exec (buf + 1, input_buffer + i);
+  if (cmd[0] == SOSH_BUILTIN_COMMAND_CHAR && i > 1)
+    sosh_builtin_exec (cmd + 1, input + i);
   else
-    sosh_external_exec (buf, input_buffer + i);
+    sosh_external_exec (cmd, input + i);
 }
 
 static void
 greet (void)
 {
   fputs (DEFAULT_PROGRAM_NAME " " SOSH_VERSION "\n"
-      "Type " SOSH_BUILTIN_COMMAND_CHAR_STRING SOSH_BUILTIN_HELP
-      " for details on usage.\n", stdout);
+      "Type " SOSH_BUILTIN_HELP_CMD " for details on usage.\n", stdout);
 }
 
 static void
 proper_exec_name (const char *n)
 {
-  char *l;
-
   if (n && *n)
   {
-    l = strrchr (n, '/');
-    if (l && *l)
+    char *s = strrchr (n, '/');
+    if (s && *s)
     {
-      g_exec = ++l;
+      g_exec = ++s;
       return;
     }
     g_exec = n;
@@ -88,15 +83,16 @@ proper_exec_name (const char *n)
 int
 main (int argc, char **argv)
 {
-  char user_input[USER_INPUT_BUFFER_MAX];
+  char input[USER_INPUT_BUFFER_MAX];
 
   proper_exec_name (argv[0]);
   greet ();
+
   while (true)
   {
     display_prompt ();
-    grab_input (user_input);
-    process_input (user_input);
+    grab_input (input);
+    process_input (input);
   }
   return EXIT_SUCCESS;
 }

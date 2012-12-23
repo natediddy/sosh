@@ -7,7 +7,7 @@
 
 #include "sosh.h"
 #include "sosh-env.h"
-#include "sosh-external.h"
+#include "sosh-exec.h"
 
 #define EXECV_ARGV_SIZE_MAX 32
 #define ARG_BUFFER_SIZE_MAX 256
@@ -15,7 +15,7 @@
 extern const char *g_exec;
 
 void
-sosh_external_exec (const char *cmd, const char *args)
+sosh_exec_program (const char *cmd, const char *args)
 {
   size_t i, j, x;
   pid_t child, w;

@@ -9,7 +9,7 @@ extern char **environ;
 extern const char *g_exec;
 
 const char *
-sosh_getenv (const char *key)
+sosh_env_getvar (const char *key)
 {
   size_t i;
   size_t k_len = strlen (key);
@@ -27,25 +27,29 @@ sosh_getenv (const char *key)
 }
 
 char *
-sosh_exeabspath (const char *p)
+sosh_env_executable_abspath (const char *name)
 {
-  size_t i, j, len, pos, p_len;
+  size_t i;
+  size_t j;
+  size_t pos;
+  size_t len;
+  size_t n_len;
   bool complete;
-  const char *value;
+  const char *env_paths;
 
-  value = sosh_getenv ("PATH");
-  if (!value)
+  env_paths = sosh_env_getvar ("PATH");
+  if (!env_paths)
   {
     fprintf (stderr, "%s: environment variable 'PATH' not set!\n", g_exec);
     return NULL;
   }
 
   len = pos = 0;
-  p_len = strlen (p);
+  n_len = strlen (name);
 
-  for (i = 0; value[i]; ++i)
+  for (i = 0; env_paths[i]; ++i)
   {
-    if (value[i] == ':' || !value[i + 1])
+    if (env_paths[i] == ':' || !env_paths[i + 1])
     {
       if (!pos)
         len = i - 1;
@@ -55,19 +59,19 @@ sosh_exeabspath (const char *p)
     }
   }
 
-  len += p_len + 1;
+  len += n_len + 1;
   pos = 0;
   complete = false;
 
   char buf[len];
 
-  for (i = 0; value[i]; ++i)
+  for (i = 0; env_paths[i]; ++i)
   {
-    if (value[i] == ':')
+    if (env_paths[i] == ':')
       complete = true;
     else
-      buf[pos++] = value[i];
-    if (!value[i + 1] && !complete)
+      buf[pos++] = env_paths[i];
+    if (!env_paths[i + 1] && !complete)
       complete = true;
     if (complete)
     {
@@ -76,7 +80,7 @@ sosh_exeabspath (const char *p)
         buf[pos++] = p[j];
       buf[pos] = '\0';
       if (!access (buf, X_OK))
-        return strdup (buf);
+        return strndup (buf, pos);
       pos = 0;
       complete = false;
     }

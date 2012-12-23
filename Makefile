@@ -7,19 +7,28 @@ VERSION = 0.01
 CFLAGS += -DSOSH_VERSION=\"$(VERSION)\"
 
 SOURCES = sosh.c \
-		  sosh-builtins.c \
+		  sosh-bltn.c \
 		  sosh-env.c \
-		  sosh-external.c
+		  sosh-exec.c \
+		  sosh-expr.c \
+		  sosh-str.c \
+		  sosh-var.c
 
 OBJECTS = sosh.o \
-		  sosh-builtins.o \
+		  sosh-bltn.o \
 		  sosh-env.o \
-		  sosh-external.o
+		  sosh-exec.o \
+		  sosh-expr.o \
+		  sosh-str.o \
+		  sosh-var.o
 
 HEADERS = sosh.h \
-		  sosh-builtins.h \
+		  sosh-bltn.h \
 		  sosh-env.h \
-		  sosh-external.h
+		  sosh-exec.h \
+		  sosh-expr.h \
+		  sosh-str.h \
+		  sosh-var.h
 
 prefix = /usr/local
 
@@ -31,14 +40,23 @@ $(TARGET): $(OBJECTS)
 sosh.o: sosh.h
 	$(CC) $(CFLAGS) -c sosh.c
 
-sosh-builtins.o: sosh-builtins.h
-	$(CC) $(CFLAGS) -c sosh-builtins.c
+sosh-bltn.o: sosh-bltn.h
+	$(CC) $(CFLAGS) -c sosh-bltn.c
 
 sosh-env.o: sosh-env.h
 	$(CC) $(CFLAGS) -c sosh-env.c
 
-sosh-external.o: sosh-external.h
-	$(CC) $(CFLAGS) -c sosh-external.c
+sosh-exec.o: sosh-exec.h
+	$(CC) $(CFLAGS) -c sosh-exec.c
+
+sosh-var.o: sosh-var.h
+	$(CC) $(CFLAGS) -c sosh-var.c
+
+sosh-expr.o: sosh-expr.h
+	$(CC) $(CFLAGS) -c sosh-expr.c
+
+sosh-str.o: sosh-str.h
+	$(CC) $(CFLAGS) -c sosh-str.c
 
 clean:
 	@rm -f $(OBJECTS)
